@@ -4,6 +4,8 @@
 #include <pcl/io/pcd_io.h>
 #include <gflags/gflags.h>
 #include "vis.h"
+#include "vector"
+
 namespace idg {
 namespace perception {
 namespace lidar {
@@ -41,7 +43,7 @@ public:
         pc->clear();
         if (index >= 0 && index < pcd_list_.size()) {
             std::string file_name = pcd_list_[index];
-            pcl::io::loadPCDFile(file_name, *pc);
+            pcl::io::loadPCDFile<Point>(file_name, *pc);
             cout << "Load pcd: " << index << " ,"
                  << file_name  << " pt size: " << pc->size() << endl;
             return true;
@@ -54,6 +56,35 @@ public:
             vis_->Run();
         }
         return true;
+    }
+
+    void Analysis(PointCloudPtr& pc) {
+        std::vector<int> beg, end;
+	double max_time = -FLT_MAX, min_time = FLT_MAX;
+        beg.push_back(0);
+        for (size_t i = 1; i < pc->size(); ++i) {
+	    if (pc->points[i].timestamp > max_time) {
+		max_time = pc->points[i].timestamp;
+	    }
+
+	    if (pc->points[i].timestamp < min_time) {
+		min_time = pc->points[i].timestamp;
+	    }
+            if (pc->points[i-1].timestamp - pc->points[i].timestamp > 0.001) {
+                end.push_back(i-1);
+                beg.push_back(i);
+            }
+        }
+        end.push_back(pc->size() - 1);
+        cout << "break size: " << beg.size() 
+	     << " min_time: " << std::fixed << min_time
+	     << " max_time: " << std::fixed << max_time 
+	     << " time diff: " << std::fixed << max_time - min_time << endl;
+        for (size_t i = 0 ; i < beg.size(); ++i) {
+            cout << i << " size: " << end[i] - beg[i] + 1
+                << " first timestamp: " << std::fixed << pc->points[beg[i]].timestamp
+                << " last timestamp: " << std::fixed << pc->points[end[i]].timestamp << endl;
+        }
     }
 
     bool LoadFileList(std::string& pcd_dir) {
@@ -97,6 +128,7 @@ public:
                 size_t beg = file_name.find_last_of('/', file_name.size() - 1);
                 size_t end = file_name.find_last_of('.', file_name.size() - 1);
                 opts.file_name = file_name.substr(beg + 1 , end - beg -1);
+                Analysis(pcd_);
                 vis_->Vis(opts);
             }
         }

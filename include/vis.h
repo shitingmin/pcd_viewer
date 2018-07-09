@@ -1,4 +1,5 @@
 #include "pcl/visualization/pcl_visualizer.h"
+#include "pcl_base.h"
 namespace idg {
 namespace perception {
 namespace lidar {
@@ -7,10 +8,6 @@ using pcl::visualization::KeyboardEvent;
 
 using std::cout;
 using std::endl;
-
-typedef pcl::PointXYZI Point;
-typedef pcl::PointCloud<pcl::PointXYZI> PointCloud;
-typedef PointCloud::Ptr PointCloudPtr;
 
 struct VisOptions {
     PointCloudPtr pc;
@@ -26,6 +23,7 @@ public:
     bool Setup();
     bool Run();
     bool Vis(VisOptions& opts);
+    void PointXYZIT2PointXYZ(PointCloudPtr& src_pc, pcl::PointCloud<pcl::PointXYZ>::Ptr& dst_pc);
     void SetKeyCallback(boost::function< void(const pcl::visualization::KeyboardEvent &)>cb);
 
 private:
