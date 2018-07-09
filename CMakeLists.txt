@@ -7,7 +7,7 @@ include_directories(SYSTEM ${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(PREFIX_DIR ${CMAKE_BINARY_DIR}/output/)
+set(PREFIX_INSTALL_DIR ${CMAKE_SOURCE_DIR}/output/)
 
 include_directories(./include)
 add_subdirectory(src)
