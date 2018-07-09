@@ -60,30 +60,30 @@ public:
 
     void Analysis(PointCloudPtr& pc) {
         std::vector<int> beg, end;
-	double max_time = -FLT_MAX, min_time = FLT_MAX;
+        double max_time = -FLT_MAX, min_time = FLT_MAX;
         beg.push_back(0);
         for (size_t i = 1; i < pc->size(); ++i) {
-	    if (pc->points[i].timestamp > max_time) {
-		max_time = pc->points[i].timestamp;
-	    }
+            if (pc->points[i].timestamp > max_time) {
+                max_time = pc->points[i].timestamp;
+            }
 
-	    if (pc->points[i].timestamp < min_time) {
-		min_time = pc->points[i].timestamp;
-	    }
-            if (pc->points[i-1].timestamp - pc->points[i].timestamp > 0.001) {
+            if (pc->points[i].timestamp < min_time) {
+                min_time = pc->points[i].timestamp;
+            }
+            if (pc->points[i-1].timestamp - pc->points[i].timestamp > 0.05) {
                 end.push_back(i-1);
                 beg.push_back(i);
             }
         }
         end.push_back(pc->size() - 1);
         cout << "break size: " << beg.size() 
-	     << " min_time: " << std::fixed << min_time
-	     << " max_time: " << std::fixed << max_time 
-	     << " time diff: " << std::fixed << max_time - min_time << endl;
+             << " min_time: " << std::fixed << min_time
+             << " max_time: " << std::fixed << max_time
+             << " time diff: " << std::fixed << max_time - min_time << endl;
         for (size_t i = 0 ; i < beg.size(); ++i) {
             cout << i << " size: " << end[i] - beg[i] + 1
-                << " first timestamp: " << std::fixed << pc->points[beg[i]].timestamp
-                << " last timestamp: " << std::fixed << pc->points[end[i]].timestamp << endl;
+                 << " first timestamp: " << std::fixed << pc->points[beg[i]].timestamp
+                 << " last timestamp: " << std::fixed << pc->points[end[i]].timestamp << endl;
         }
     }
 
